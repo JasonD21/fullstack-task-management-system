@@ -5,19 +5,27 @@ backend/*.user
 backend/*.suo
 backend/appsettings.Development.json
 backend/appsettings.Local.json
+backend/TaskManagement.db      # SQLite database file
+backend/TaskManagement.db-*    # SQLite temp files
 
-# Frontend (will add later)
+# Frontend (Angular)
 frontend/node_modules/
 frontend/dist/
 frontend/.angular/
+frontend/.vscode/
+frontend/coverage/
 
 # VS Code
 .vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
 
 # Database files
 *.db
 *.db-shm
 *.db-wal
+*.db-journal
 
 # Build results
 [Dd]ebug/
@@ -26,6 +34,25 @@ frontend/.angular/
 *.pdb
 *.dll
 
+# IDE
+.idea/
+*.swp
+*.swo
+
 # OS
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Package files
+package-lock.json
+yarn.lock
+
+# Secrets
+.env
+*.env.local
+*.env.development
+*.env.production
