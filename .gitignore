@@ -1,0 +1,31 @@
+# Backend
+backend/bin/
+backend/obj/
+backend/*.user
+backend/*.suo
+backend/appsettings.Development.json
+backend/appsettings.Local.json
+
+# Frontend (will add later)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# VS Code
+.vscode/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+*.exe
+*.pdb
+*.dll
+
+# OS
+.DS_Store
+Thumbs.db
