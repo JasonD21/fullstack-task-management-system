@@ -7,6 +7,7 @@ using System.Text;
 using backend.Data;
 using backend.Data.Entities;
 using backend.Services;
+using backend.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,8 +60,9 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-// Add AuthService
+// Add Services
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<WorkspaceService>();
 
 // Add JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -114,6 +116,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 // Use CORS policy
