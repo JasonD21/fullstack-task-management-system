@@ -68,5 +68,81 @@ namespace backend.Services
 
             return workspaces;
         }
+
+        public async Task<List<WorkspaceMemberDto>> GetWorkspaceMembersAsync(Guid workspaceId, Guid userId)
+        {
+            // Check if user is member of the workspace
+            var isMember = await _context.WorkspaceMembers
+                .AnyAsync(wm => wm.WorkspaceId == workspaceId && wm.UserId == userId);
+
+            if (!isMember)
+            {
+                throw new UnauthorizedAccessException("You are not a member of this workspace");
+            }
+
+            var members = await _context.WorkspaceMembers
+                .Where(wm => wm.WorkspaceId == workspaceId)
+                .Include(wm => wm.User)
+                .Select(wm => new WorkspaceMemberDto
+                {
+                    Id = wm.Id,
+                    UserId = wm.UserId,
+                    UserName = wm.User.FullName,
+                    UserEmail = wm.User.Email!,
+                    Role = wm.Role,
+                    JoinedAt = wm.CreatedAt
+                })
+                .ToListAsync();
+
+            return members;
+        }
+
+        public async Task<WorkspaceMemberDto> AddMemberToWorkspaceAsync(Guid workspaceId, string userEmail, string role, Guid currentUserId)
+        {
+            // Check if current user is admin of the workspace
+            var currentUserRole = await _context.WorkspaceMembers
+                .Where(wm => wm.WorkspaceId == workspaceId && wm.UserId == currentUserId)
+                .Select(wm => wm.Role)
+                .FirstOrDefaultAsync();
+
+            if (currentUserRole != "Admin")
+            {
+                throw new UnauthorizedAccessException("Only admins can add members");
+            }
+
+            var userToAdd = await _userManager.FindByEmailAsync(userEmail) ?? throw new KeyNotFoundException("User not found");
+
+            // Check if user is already a member
+            var existingMember = await _context.WorkspaceMembers
+                .FirstOrDefaultAsync(wm => wm.WorkspaceId == workspaceId && wm.UserId == userToAdd.Id);
+
+            if (existingMember != null)
+            {
+                throw new InvalidOperationException("User is already a member of this workspace");
+            }
+
+            var member = new WorkspaceMember
+            {
+                WorkspaceId = workspaceId,
+                UserId = userToAdd.Id,
+                Role = role
+            };
+
+            _context.WorkspaceMembers.Add(member);
+            await _context.SaveChangesAsync();
+
+            // Notify the new member
+            // (We'll implement email notification later)
+
+            return new WorkspaceMemberDto
+            {
+                Id = member.Id,
+                UserId = member.UserId,
+                UserName = userToAdd.FullName,
+                UserEmail = userToAdd.Email!,
+                Role = member.Role,
+                JoinedAt = member.CreatedAt
+            };
+        }
     }
 }

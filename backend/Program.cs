@@ -68,6 +68,8 @@ builder.Services.AddScoped<WorkspaceService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<CommentService>();
+builder.Services.AddScoped<FileService>();
 
 // Add JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -128,6 +130,8 @@ builder.Services.AddCors(options =>
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
+// Enable static file serving (for uploaded files)
+builder.Services.AddDirectoryBrowser();
 
 var app = builder.Build();
 
@@ -147,6 +151,7 @@ app.UseCors("AllowAngularApp");
 // Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles();
 
 app.MapControllers();
 // Map SignalR hubs

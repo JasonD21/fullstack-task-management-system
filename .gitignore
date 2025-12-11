@@ -56,3 +56,8 @@ yarn.lock
 *.env.local
 *.env.development
 *.env.production
+
+# Uploaded files
+wwwroot/uploads/
+wwwroot/avatars/
+wwwroot/attachments/

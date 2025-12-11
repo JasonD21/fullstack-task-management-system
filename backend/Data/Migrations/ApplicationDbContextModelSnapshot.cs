@@ -254,9 +254,6 @@ namespace backend.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("AssignedId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid?>("AssigneeId")
                         .HasColumnType("TEXT");
 
@@ -302,6 +299,9 @@ namespace backend.Data.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -570,7 +570,7 @@ namespace backend.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("backend.Data.Entities.Workspace", "Workspace")
-                        .WithMany("Members")
+                        .WithMany("WorkspaceMembers")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -594,9 +594,9 @@ namespace backend.Data.Migrations
 
             modelBuilder.Entity("backend.Data.Entities.Workspace", b =>
                 {
-                    b.Navigation("Members");
-
                     b.Navigation("Projects");
+
+                    b.Navigation("WorkspaceMembers");
                 });
 #pragma warning restore 612, 618
         }
