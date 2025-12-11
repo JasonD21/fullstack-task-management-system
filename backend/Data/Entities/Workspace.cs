@@ -8,7 +8,7 @@ namespace backend.Data.Entities
 
         //Navigation props
         public virtual User Owner { get; set; } = null!;
-        public virtual ICollection<WorkspaceMember> Members { get; set; } = [];
+        public virtual ICollection<WorkspaceMember> WorkspaceMembers { get; set; } = [];
         public virtual ICollection<Project> Projects { get; set; } = [];
     }
 }

@@ -63,6 +63,8 @@ builder.Services.AddIdentity<User, IdentityRole<Guid>>()
 // Add Services
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<WorkspaceService>();
+builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<TaskService>();
 
 // Add JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");

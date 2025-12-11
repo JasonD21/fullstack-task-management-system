@@ -10,7 +10,7 @@ namespace backend.Data.Entities
         public PriorityLevel Priority { get; set; } = PriorityLevel.Medium;
         public DateTime? DueDate { get; set; }
         public Guid ProjectId { get; set; }
-        public Guid? AssignedId { get; set; }
+        public Guid? AssigneeId { get; set; }
 
         //Navigation props
         public virtual Project Project { get; set; } = null!;
