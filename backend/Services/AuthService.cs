@@ -38,7 +38,8 @@ namespace backend.Services
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Email, user.Email!),
-                new(ClaimTypes.Name, user.FullName)
+                new(ClaimTypes.Name, user.FullName),
+                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(

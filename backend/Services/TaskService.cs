@@ -8,10 +8,12 @@ namespace backend.Services
     public class TaskService
     {
         private readonly ApplicationDbContext _context;
+        private readonly NotificationService _notificationService;
 
-        public TaskService(ApplicationDbContext context)
+        public TaskService(ApplicationDbContext context, NotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         public async Task<TaskDto> CreateTaskAsync(CreateTaskDto createTaskDto, Guid userId)
@@ -39,6 +41,23 @@ namespace backend.Services
 
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
+
+            // After saving changes, send notification
+            var workspace = await _context.Projects
+                .Where(p => p.Id == createTaskDto.ProjectId)
+                .Select(p => p.Workspace)
+                .FirstOrDefaultAsync();
+
+            var currentUser = await _context.Users.FindAsync(userId);
+
+            if (workspace != null && currentUser != null)
+            {
+                await _notificationService.NotifyTaskCreated(
+                    workspace.Id,
+                    task.Id,
+                    task.Title,
+                    currentUser.FullName);
+            }
 
             // Get assignee name if assigned
             string? assigneeName = null;
@@ -121,10 +140,27 @@ namespace backend.Services
                 throw new UnauthorizedAccessException("You don't have access to this task");
             }
 
+            // Store old status for notification
+            var oldStatus = task.Status.ToString();
+
             task.Status = Enum.Parse<Data.Entities.TaskStatus>(newStatus);
             task.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
+
+            // After updating status, send notification
+            var currentUser = await _context.Users.FindAsync(userId);
+
+            if (currentUser != null)
+            {
+                await _notificationService.NotifyTaskStatusChanged(
+                    task.Project.WorkspaceId,
+                    task.Id,
+                    task.Title,
+                    oldStatus.ToString(),
+                    newStatus,
+                    currentUser.FullName);
+            }
 
             // Return updated task DTO
             var assigneeName = task.AssigneeId.HasValue
